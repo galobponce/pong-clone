@@ -29,7 +29,7 @@ It uses `W-S` keys to move player 1 (left) and `UP-DOWN` keys to move player 2 (
 
 ## :floppy_disk: Downloads:
 
-  - [Windows 10 64bit](https://github.com/galobponce/pong/tree/main/downloads/win10-64bit.zip)
+  - [Windows 10 64bit](https://github.com/galobponce/pong-clone/blob/main/downloads/win10-64bit.zip)
 
 ## :computer: Deployment:
 
