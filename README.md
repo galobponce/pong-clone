@@ -8,9 +8,9 @@ It uses `W-S` keys to move player 1 (left) and `UP-DOWN` keys to move player 2 (
 
 ## :camera: Demonstration:
 
-![menu](https://github.com/galobponce/pong/blob/main/src/images/menu.png)
+![menu](https://github.com/galobponce/pong-clone/blob/main/src/images/menu.png)
 
-![playing](https://github.com/galobponce/pong/blob/main/src/images/play.png)
+![playing](https://github.com/galobponce/pong-clone/blob/main/src/images/play.png)
 
 ## :unlock: Features:
 
