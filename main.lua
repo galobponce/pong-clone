@@ -176,16 +176,24 @@ function love.update(dt)
     -- Player 1
     if ball:isColliding(player1) then
       -- Places the ball to not overlap the paddle
-      ball.x = player1.x + player1.width
-      -- Bounces the ball to the other side with more speed
-      ball.velocityInX = -ball.velocityInX * 1.12
+      ball.x = player1.x + player1.width + 3
+      -- Bounces the ball to the other side with more speed (max speed)
+      if (not (ball.velocityInX < -280)) then
+        ball.velocityInX = -ball.velocityInX * 1.12
+      else
+        ball.velocityInX = -ball.velocityInX
+      end
       sounds['paddle-hit']:play()
     end
 
     -- Player 2
     if ball:isColliding(player2) then
-      ball.x = player2.x - player2.width
-      ball.velocityInX = -ball.velocityInX * 1.12
+      ball.x = player2.x - player2.width - 3
+      if (not (ball.velocityInX > 280)) then
+        ball.velocityInX = -ball.velocityInX * 1.12
+      else
+        ball.velocityInX = -ball.velocityInX
+      end
       sounds['paddle-hit']:play()
     end
 
