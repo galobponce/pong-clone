@@ -22,7 +22,7 @@ function love.load()
   -- Retro-looking font
   smallFont = love.graphics.newFont('src/fonts/retro-font.ttf', 8)
   largeFont = love.graphics.newFont('src/fonts/retro-font.ttf', 32)
-  
+
   -- Random numbers.
   math.randomseed(os.time())
 
@@ -37,7 +37,7 @@ function love.load()
   sounds['background']:setLooping(true)
   sounds['background']:setVolume(0.8)
   sounds['background']:play()
-  
+
   --[[
     Object's intance
   ]]
@@ -46,7 +46,7 @@ function love.load()
   player2 = Paddle(GAME_WIDTH - 10, GAME_HEIGHT - 50, 5, 20, 200)
   ball = Ball(GAME_WIDTH / 2 - 2, GAME_HEIGHT / 2 - 2, 4, 4)
 
-  --[[ 
+  --[[
     Sets game's state; can be any of the following:
     1. 'menu' : (beggining of the game, before serve)
     2. 'serve' : (waiting to play key pressed to serve the ball)
@@ -54,6 +54,9 @@ function love.load()
     4. 'win' : (the game is over, with a winner, ready for restart)
   ]]
   gameState = 'menu'
+
+  -- Defines if player is playing against the machine
+  againtsMachine = false
 
   -- Configure push lib
   push:setupScreen(GAME_WIDTH, GAME_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
@@ -72,7 +75,7 @@ function love.keypressed(key)
   -- Toggle between states
   elseif key == 'enter' or key == 'return' then
     if gameState == 'menu' then
-      -- Player to serve is random 
+      -- Player to serve is random
       playerToServe = math.random(2) == 1 and 1 or 2
       player1:resetScore()
       player2:resetScore()
@@ -80,44 +83,58 @@ function love.keypressed(key)
     elseif gameState == 'serve' then
       -- Serves the ball and plays sound
       ball:serve()
-      sounds['serve']:play()            
+      sounds['serve']:play()
       gameState = 'play'
     elseif gameState == 'win' then
-      -- Same as menu to serve 
+      -- Same as menu to serve
       playerToServe = math.random(2) == 1 and 1 or 2
       player1:resetScore()
       player2:resetScore()
       gameState = 'serve'
     end
+  elseif key == 'lshift' or key == 'rshift' then
+		if gameState == 'menu' then
+		-- Player to serve is user
+		againtsMachine = true
+		playerToServe = 1
+		player1:resetScore()
+		player2:resetScore()
+		gameState = 'serve'
+		end
   end
 end
 
 
--- Runs every frame with 'dt' (1/6 of second) passed in 
+-- Runs every frame with 'dt' (1/6 of second) passed in
 function love.update(dt)
   if gameState == 'play' then
     -- Player 1 movement
     if love.keyboard.isDown('w') then
       player1.velocity = -player1.speed
     elseif love.keyboard.isDown('s') then
-      player1.velocity = player1.speed    
+      player1.velocity = player1.speed
     else
       player1.velocity = 0
     end
 
     -- Player 2 movement
-    if love.keyboard.isDown('up') then
-      player2.velocity = -player2.speed 
-    elseif love.keyboard.isDown('down') then
+    if love.keyboard.isDown('up') and not againtsMachine then
+      player2.velocity = -player2.speed
+    elseif love.keyboard.isDown('down') and not againtsMachine then
       player2.velocity = player2.speed
     else
       player2.velocity = 0
     end
 
+		-- Machine movement
+		if againtsMachine then
+			player2.y = ball.y
+		end
+
     --[[
       Collision with top & bottom screen
-    ]] 
-    -- Top of the screen 
+    ]]
+    -- Top of the screen
     if ball.y <= 0 then
       ball.y = 0
       ball.velocityInY = -ball.velocityInY
@@ -129,11 +146,11 @@ function love.update(dt)
       ball.y = GAME_HEIGHT - 4
       ball.velocityInY = -ball.velocityInY
       sounds['wall-hit']:play()
-    end 
+    end
 
     --[[
       Collision with left & right screen
-    ]] 
+    ]]
     -- Left side
     if ball.x < 0 then
       sounds['score']:play()
@@ -212,14 +229,15 @@ function love.draw(input)
   push:start()
   -- Background color
   love.graphics.clear(30/255, 35/255, 45/255, 255/255)
-  
+
   if gameState == 'menu' then
     -- UI messages
-    love.graphics.setFont(smallFont)    
+    love.graphics.setFont(smallFont)
     love.graphics.printf('Player 1: W-S', 10, 10, GAME_WIDTH, 'left')
     love.graphics.printf('Player 2: UP-DOWN', 10, 30, GAME_WIDTH, 'left')
     love.graphics.printf('Press Enter to play', 10, 50, GAME_WIDTH, 'left')
-    love.graphics.printf('Press Esc to quit', 10, 70, GAME_WIDTH, 'left')
+    love.graphics.printf('Press Shift to play against machine', 10, 70, GAME_WIDTH, 'left')
+    love.graphics.printf('Press Esc to quit', 10, 90, GAME_WIDTH, 'left')
     love.graphics.setFont(largeFont)
     love.graphics.printf('Pong!', 0, GAME_HEIGHT / 2 - 25, GAME_WIDTH, 'center')
 
@@ -242,7 +260,7 @@ function love.draw(input)
 
   elseif gameState == 'win' then
       -- UI messages
-      love.graphics.setFont(smallFont)    
+      love.graphics.setFont(smallFont)
       love.graphics.printf('Press Enter to restart', 10, 10, GAME_WIDTH, 'left')
       love.graphics.printf('Press Esc to quit', 10, 30, GAME_WIDTH, 'left')
       displayScore()
