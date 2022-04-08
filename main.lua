@@ -126,7 +126,24 @@ function love.update(dt)
 
         -- Machine movement
         if againtsMachine then
-            player2.y = ball.y
+
+            -- Less speed than user
+            player2.speed = 150
+            if ball.velocityInX > 0 then
+
+                -- Calcs if going top or bottom
+                local difference = ball.y - player2.y
+                if difference < 0 then
+                    player2.velocity = -player2.speed
+                elseif difference > 0 then
+                    player2.velocity = player2.speed
+                else
+                    player2.velocity = 0
+                end
+
+            else
+                player2.velocity = 0
+            end
         end
 
         --[[
@@ -199,13 +216,6 @@ function love.update(dt)
         -- Player 2
         if ball:isColliding(player2) then
             ball.x = player2.x - player2.width - 3
-
-            if ball:isCollidingTop(player2) then
-
-            elseif ball:isCollidingBottom(player2) then
-
-            end
-
             ball.velocityInX = -ball.velocityInX * 1.12
             sounds['paddle-hit']:play()
         end
