@@ -58,6 +58,10 @@ function love.load()
     -- Defines if player is playing against the machine
     againtsMachine = false
 
+    -- 😉
+    player1Activated = false
+    player2Activated = false
+
     -- Configure push lib
     push:setupScreen(GAME_WIDTH, GAME_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
         fullscreen = false,
@@ -100,28 +104,41 @@ function love.keypressed(key)
             player2:resetScore()
             gameState = 'serve'
         end
+    elseif key == 'q' and gameState == 'play' then
+        player1Activated = not player1Activated
+    elseif key == 'rctrl' and gameState == 'play' then
+        player2Activated = not player2Activated
     end
 end
 
 -- Runs every frame with 'dt' (1/6 of second) passed in
 function love.update(dt)
     if gameState == 'play' then
-        -- Player 1 movement
-        if love.keyboard.isDown('w') then
-            player1.velocity = -player1.speed
-        elseif love.keyboard.isDown('s') then
-            player1.velocity = player1.speed
+
+        if player1Activated and ball.velocityInX < 0 then
+            player1.y = ball.y
         else
-            player1.velocity = 0
+            -- Player 1 movement
+            if love.keyboard.isDown('w') then
+                player1.velocity = -player1.speed
+            elseif love.keyboard.isDown('s') then
+                player1.velocity = player1.speed
+            else
+                player1.velocity = 0
+            end
         end
 
-        -- Player 2 movement
-        if love.keyboard.isDown('up') and not againtsMachine then
-            player2.velocity = -player2.speed
-        elseif love.keyboard.isDown('down') and not againtsMachine then
-            player2.velocity = player2.speed
+        if player2Activated and ball.velocityInX > 0 then
+            player2.y = ball.y
         else
-            player2.velocity = 0
+            -- Player 2 movement
+            if love.keyboard.isDown('up') and not againtsMachine then
+                player2.velocity = -player2.speed
+            elseif love.keyboard.isDown('down') and not againtsMachine then
+                player2.velocity = player2.speed
+            else
+                player2.velocity = 0
+            end
         end
 
         -- Machine movement
